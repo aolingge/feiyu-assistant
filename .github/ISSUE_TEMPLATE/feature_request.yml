@@ -1,0 +1,26 @@
+name: 功能建议
+description: 提出一个具体的改进建议
+title: "[建议] "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请聚焦一个场景，并说明这项改动是否会读取账号数据、发送内容或新增后台任务。
+  - type: textarea
+    id: problem
+    attributes:
+      label: 要解决的问题
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 期望行为
+    validations:
+      required: true
+  - type: textarea
+    id: effects
+    attributes:
+      label: 对账号与数据的影响
+      description: 描述读写权限、网络请求、持久化数据及是否需要用户主动开启。

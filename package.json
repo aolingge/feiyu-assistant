@@ -1,0 +1,57 @@
+{
+  "name": "dsh-bili-whale",
+  "version": "0.4.6-community.1",
+  "description": "A Bilibili assistant plugin for DSH with video research, local notes, notifications, and reviewed account actions.",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "bilibili",
+    "agent",
+    "diary"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aolingge/feiyu-assistant.git"
+  },
+  "homepage": "https://github.com/aolingge/feiyu-assistant#readme",
+  "bugs": {
+    "url": "https://github.com/aolingge/feiyu-assistant/issues"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "tools",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "NOTICE.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [],
+      "platform": "web"
+    }
+  },
+  "license": "MIT",
+  "dependencies": {
+    "qrcode": "1.5.4"
+  }
+}
