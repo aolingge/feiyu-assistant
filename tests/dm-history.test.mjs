@@ -20,10 +20,18 @@ function box(t){
 test('real CLI queues consecutive owner messages chronologically despite own latest message; retries stable, ack drains without network',t=>{
  const b=box(t);b.save({owner:'222',lastSeen:900});b.put(page([row(3,1002,111),row(2,1001),row(1,1000)]))
  const a=b.peek();assert.equal(a.text,'message 1');const network=fs.readFileSync(b.log,'utf8')
+ if(process.platform!=='win32')assert.equal(fs.statSync(b.state).mode&0o777,0o600)
  assert.equal(b.peek().receipt,a.receipt);assert.equal(b.run('--ack','wrong').status,2)
  assert.equal(b.run('--ack',a.receipt).status,0);const c=b.peek();assert.equal(c.text,'message 2')
  assert.equal(fs.readFileSync(b.log,'utf8'),network);assert.equal(b.run('--ack',c.receipt).status,0)
  assert.equal(b.run('--once','--peek').status,1);assert.equal(b.read().lastSeen,1001)
+})
+test('legacy DM state is restricted on read and stays owner-only after acknowledgement on POSIX',t=>{
+ if(process.platform==='win32')return t.skip('POSIX file permissions only')
+ const b=box(t);b.save({owner:'222',pending:{mid:'222',hit:true,receipt:'legacy-private',ts:1001,key:'old',text:'private message'}})
+ fs.chmodSync(b.state,0o644);assert.equal(fs.statSync(b.state).mode&0o777,0o644)
+ assert.equal(b.peek().text,'private message');assert.equal(fs.statSync(b.state).mode&0o777,0o600)
+ assert.equal(b.run('--ack','legacy-private').status,0);assert.equal(fs.statSync(b.state).mode&0o777,0o600)
 })
 test('same-second IDs deduplicate across restart and page overlaps',t=>{
  const b=box(t);b.save({owner:'222',lastSeen:1000,lastKey:'1'});b.put({pages:{0:page([row(3),row(2)],1),2:page([row(2),row(1)],0)}})

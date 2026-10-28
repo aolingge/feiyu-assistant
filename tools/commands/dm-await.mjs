@@ -11,7 +11,7 @@ const home=process.env.USERPROFILE||process.env.HOME||'/'
 const file=path.join(home,'.bili-ai/dm-await-state.json')
 function save(state) {
   const tmp=file+'.'+crypto.randomUUID()+'.tmp'
-  try{fs.writeFileSync(tmp,JSON.stringify(state,null,2));fs.renameSync(tmp,file)}finally{fs.rmSync(tmp,{force:true})}
+  try{fs.writeFileSync(tmp,JSON.stringify(state,null,2),{flag:'wx',mode:0o600});fs.renameSync(tmp,file)}finally{fs.rmSync(tmp,{force:true})}
 }
 function acknowledge(state,message) {
   const same=Number(state.lastSeen)===message.ts
@@ -21,7 +21,13 @@ function emit(message){console.log(json?JSON.stringify(message):'DM_HIT mid='+ow
 async function main(){
   if(!owner){console.error('配置里 owner.mid 为空');return 2}
   let state={}
-  try{state=JSON.parse(fs.readFileSync(file,'utf8'));if(!state||typeof state!=='object'||Array.isArray(state))throw Error('invalid state')}
+  try{
+    const info=fs.lstatSync(file)
+    if(!info.isFile())throw Error('私信状态不是普通文件')
+    if(process.platform!=='win32')fs.chmodSync(file,0o600)
+    state=JSON.parse(fs.readFileSync(file,'utf8'))
+    if(!state||typeof state!=='object'||Array.isArray(state))throw Error('invalid state')
+  }
   catch(e){if(e.code!=='ENOENT')throw Error('私信状态无法读取，已停止推进已读位置：'+e.message)}
   if(state.owner&&state.owner!==owner)state={}
   if(state.lastSeen!==undefined&&(!Number.isFinite(Number(state.lastSeen))||Number(state.lastSeen)<0))throw Error('私信游标损坏，已停止读取')
