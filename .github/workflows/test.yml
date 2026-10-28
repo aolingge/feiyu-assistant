@@ -27,3 +27,23 @@ jobs:
       - name: Check JavaScript syntax
         shell: bash
         run: find lib tools tests -type f \( -name '*.js' -o -name '*.mjs' \) -print0 | xargs -0 -n1 node --check
+
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - name: Check JavaScript syntax
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem -Path lib, tools, tests -Recurse -File -Include *.js, *.mjs
+          foreach ($file in $files) {
+            node --check $file.FullName
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }

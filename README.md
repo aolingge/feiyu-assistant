@@ -59,7 +59,7 @@ npm ci
 npm test
 ```
 
-GitHub Actions 会在 Node.js 20、22 和 24 上运行离线测试并检查 JavaScript 语法。贡献前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。
+GitHub Actions 在 Ubuntu 上覆盖 Node.js 20、22 和 24，并在 Windows 上验证 Node.js 22；两边都会运行离线测试和 JavaScript 语法检查。贡献前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## 许可
 
